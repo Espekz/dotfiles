@@ -145,6 +145,8 @@ alias dce="docker-compose exec"
 
 # Symfony (si installé dans le conteneur)
 alias sf="docker exec -it symfony_php php bin/console"
+alias new-symfony="~/dotfiles/scripts/new-symfony.sh"
+alias pma="open http://localhost:8081"
 
 function update-dotfiles() {
   cd ~/dotfiles || return
