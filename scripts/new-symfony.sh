@@ -90,6 +90,11 @@ NGINX
 # === LANCER DOCKER ===
 docker-compose up -d --build
 
+echo "⏳ Attente du conteneur PHP..."
+until docker exec -it ${PROJECT_NAME}_php true 2>/dev/null; do
+  sleep 1
+done
+
 # === INSTALLER SYMFONY ===
 docker exec -it ${PROJECT_NAME}_php bash -c "apt-get update && apt-get install -y unzip git curl && curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && composer create-project symfony/webapp ."
 
@@ -155,20 +160,45 @@ cat <<MAKE > Makefile
 up:
 	docker-compose up -d
 
-down:
+stop:
 	docker-compose down
 
+restart:
+	make stop
+	make up
+
+logs:
+	docker-compose logs -f
+
+# 🧱 Symfony Console
 bash:
 	docker-compose exec php bash
 
 console:
 	docker-compose exec php php bin/console
 
+# 🧪 Tests & qualité
 test:
 	docker-compose exec php php bin/phpunit
 
+phpstan:
+	docker-compose exec php vendor/bin/phpstan analyse src --level=max
+
+# 📦 Doctrine
 migrate:
 	docker-compose exec php php bin/console doctrine:migrations:migrate --no-interaction
+
+fixtures:
+	docker-compose exec php php bin/console doctrine:fixtures:load --no-interaction
+
+# 🧨 Reset complet
+fresh:
+	docker-compose down -v
+	docker-compose up -d --build
+	docker-compose exec php php bin/console doctrine:database:create --if-not-exists
+	docker-compose exec php php bin/console doctrine:migrations:migrate --no-interaction
+	docker-compose exec php php bin/console doctrine:fixtures:load --no-interaction
+  
 MAKE
 
 # === INIT GIT + CREATION DEPOT GITHUB ===
