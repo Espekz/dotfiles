@@ -3,6 +3,7 @@
 PROJECT_NAME="$1"
 BASE_DIR="$HOME/Workspace/Symfony"
 PROJECT_DIR="$BASE_DIR/$PROJECT_NAME"
+LOG_FILE="$PROJECT_DIR/log.txt"
 
 if [ -z "$PROJECT_NAME" ]; then
   echo "❌ Tu dois fournir un nom de projet : new-symfony mon-projet"
@@ -11,6 +12,9 @@ fi
 
 mkdir -p "$PROJECT_DIR"
 cd "$PROJECT_DIR" || exit 1
+
+# Rediriger toutes les sorties vers le fichier log.txt
+exec > >(tee "$LOG_FILE") 2>&1
 
 # === DOCKER SETUP ===
 cat <<YAML > docker-compose.yml
@@ -88,6 +92,7 @@ server {
 NGINX
 
 # === LANCER DOCKER ===
+echo "🚀 Lancement des services Docker..."
 docker-compose up -d --build
 
 echo "⏳ Attente du conteneur PHP..."
@@ -170,35 +175,30 @@ restart:
 logs:
 	docker-compose logs -f
 
-# 🧱 Symfony Console
 bash:
 	docker-compose exec php bash
 
 console:
 	docker-compose exec php php bin/console
 
-# 🧪 Tests & qualité
 test:
 	docker-compose exec php php bin/phpunit
 
 phpstan:
 	docker-compose exec php vendor/bin/phpstan analyse src --level=max
 
-# 📦 Doctrine
 migrate:
 	docker-compose exec php php bin/console doctrine:migrations:migrate --no-interaction
 
 fixtures:
 	docker-compose exec php php bin/console doctrine:fixtures:load --no-interaction
 
-# 🧨 Reset complet
 fresh:
 	docker-compose down -v
 	docker-compose up -d --build
 	docker-compose exec php php bin/console doctrine:database:create --if-not-exists
 	docker-compose exec php php bin/console doctrine:migrations:migrate --no-interaction
 	docker-compose exec php php bin/console doctrine:fixtures:load --no-interaction
-  
 MAKE
 
 # === INIT GIT + CREATION DEPOT GITHUB ===
@@ -215,3 +215,4 @@ else
 fi
 
 echo "\n✅ Projet ${PROJECT_NAME} prêt ! Accès : http://localhost:8080 | phpMyAdmin : http://localhost:8081"
+echo "📄 Tous les logs de cette installation sont disponibles ici : $LOG_FILE"
