@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  php:
+    image: php:8.2-fpm
+    container_name: ${PROJECT_NAME}_php
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: ${PROJECT_NAME}_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+
+  db:
+    image: mysql:8.0
+    container_name: ${PROJECT_NAME}_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${PROJECT_NAME}
+      MYSQL_USER: espeka
+      MYSQL_PASSWORD: espeka
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: ${PROJECT_NAME}_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+
+volumes:
+  db_data:
