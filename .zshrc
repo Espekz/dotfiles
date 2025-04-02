@@ -146,3 +146,12 @@ alias dce="docker-compose exec"
 # Symfony (si installé dans le conteneur)
 alias sf="docker exec -it symfony_php php bin/console"
 
+function update-dotfiles() {
+  cd ~/dotfiles || return
+  cp ~/.zshrc .
+  cp ~/.p10k.zsh . 2>/dev/null
+  git add .
+  git commit -m "🔄 Mise à jour automatique des dotfiles ($(date '+%Y-%m-%d %H:%M'))"
+  git push
+  echo "✅ Dotfiles mis à jour sur GitHub."
+}
