@@ -2,7 +2,7 @@
 
 echo "🚀 Installation des dotfiles..."
 
-git clone git@github.com:Espekz/dotfiles.git ~/dotfiles
+git clone git@github.com:espekz/dotfiles.git ~/dotfiles
 cd ~/dotfiles || exit 1
 
 cp .zshrc ~/.zshrc
