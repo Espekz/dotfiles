@@ -1,70 +1,66 @@
-# Dotfiles & Scripts - Espeka
+# Dotfiles - by espekz
 
-Bienvenue dans mon repository de dotfiles personnalisés. Ce repo contient divers fichiers de configuration ainsi que des scripts pour automatiser la création de projets Symfony avec Docker, GitHub et bonnes pratiques.
-
-## Structure du repo
-
-```
-.
-├── aliases.zsh             # Alias Zsh utilisés au quotidien
-├── scripts/
-│   └── new-symfony.sh      # Script principal pour créer un projet Symfony automatiquement
-├── templates/
-│   ├── docker-compose.yml  # Template de docker-compose personnalisé
-│   ├── nginx.conf          # Config nginx
-│   ├── Makefile            # Outils make pour gestion projet
-│   └── .env.template       # Template .env prêt à l'emploi
-```
-
-## Script : `new-symfony`
-
-### Usage
-```bash
-new-symfony nom-du-projet
-```
-
-Ce script fait tout pour vous :
-
-- Crée un nouveau projet Symfony via `symfony new` dans `~/Workspace/Symfony/`
-- Gère toute l’intégration Docker avec MySQL, PHP, Nginx, phpMyAdmin
-- Configure automatiquement le fichier `.env` (base de données, user, etc)
-- Installe des outils utiles : Doctrine Migrations, PHPStan, PHPUnit, Fixtures
-- Démarre les conteneurs Docker
-- Initialise un dépôt Git local et le push automatiquement sur GitHub sur `master`
-
-### Prérequis
-- Symfony CLI installé
-- Docker installé et en fonctionnement
-- Compte GitHub configuré avec un token personnel (scope: `repo`) dans le gestionnaire de clés
-- Un fichier `~/.config/gh/hosts.yml` ou `gh auth login` préalablement exécuté
-
-### Infos utiles
-- La base de données porte le nom du projet (ex: `mon-projet_test`) et le user par défaut est `espeka`
-- Un fichier `log.txt` est généré dans le dossier du projet contenant uniquement les erreurs
-- L’accès phpMyAdmin est disponible sur `http://localhost:8081`
-
-## Makefile - Commandes utiles
-Voici les commandes `make` disponibles dans tous les projets créés :
-
-```bash
-make up         # Démarre le projet (docker-compose up -d --build)
-make down       # Arrête les conteneurs
-make logs       # Affiche les logs des conteneurs
-make shell      # Ouvre un shell dans le conteneur PHP
-make db         # Accès à MySQL via CLI
-make migrate    # Lance les migrations Doctrine
-make fixtures   # Charge les fixtures
-make test       # Lance les tests PHPUnit
-make phpstan    # Analyse statique avec PHPStan
-```
-
-## TODO
-- Ajouter une commande pour la suppression complète d’un projet
-- Ajouter d’autres templates (API Platform, Laravel, etc.)
+Ce dépôt contient mes fichiers de configuration personnels pour mon environnement de développement sur macOS, ainsi que quelques scripts pratiques pour automatiser la création de projets Symfony avec Docker.
 
 ---
 
-N’hésitez pas à forker et adapter selon vos besoins !
+## 📁 Contenu du dépôt
 
-**Auteur : [espekz](https://github.com/espekz)**
+- `.zshrc` : configuration du shell Zsh
+- `.p10k.zsh` : configuration thématique pour le prompt Powerlevel10k *(optionnel)*
+- `scripts/` : scripts utilitaires personnalisés
+  - `new-symfony.sh` : gère la création automatique d'un projet Symfony avec environnement Docker prêt à l'emploi
 
+---
+
+## ⚙️ Installation sur un nouvel ordinateur
+
+Un script `install.sh` est prévu pour initialiser rapidement l'environnement sur une nouvelle machine :
+
+```bash
+./install.sh
+```
+
+Il :
+- Clone ce dépôt dans `~/dotfiles`
+- Copie `.zshrc` et `.p10k.zsh` à la racine de l'utilisateur
+- Recharge la config shell automatiquement
+
+---
+
+## 🧰 Script `new-symfony`
+
+Le script `new-symfony.sh` automatise les étapes suivantes :
+
+1. Création d'un nouveau projet Symfony WebApp dans `~/Workspace/Symfony/NOM_DU_PROJET`
+2. Initialisation Docker :
+   - Récupération d'un template `docker-compose.yml`, `nginx.conf` et `Makefile`
+   - Lancement des services via `docker-compose`
+3. Installation des dépendances Symfony via `composer install`
+4. Initialisation git + push automatique sur GitHub (branche `master`)
+
+### Exemple d'utilisation :
+```bash
+new-symfony mon-nouveau-projet
+```
+
+### Alias
+
+Un alias `new-symfony` est ajouté automatiquement dans `.zshrc` pour accéder au script facilement :
+```bash
+alias new-symfony="~/dotfiles/scripts/new-symfony.sh"
+```
+
+---
+
+## 🌍 Infos utiles
+
+- Le projet Symfony est accessible via http://localhost:8080
+- PhpMyAdmin est disponible via http://localhost:8081 (si utilisé)
+- Les identifiants par défaut sont : `espeka` / `espeka` pour MySQL
+
+---
+
+## 🧑‍💻 Auteur
+
+> Ce repo est maintenu par **[@espekz](https://github.com/espekz)**.
